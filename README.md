@@ -37,7 +37,9 @@ Execute the script
 
 The script will take a couple of hours to build (tested in Raspberry Pi 4 4GB)
 
-Follow further instructions on how to us it on 
+The output is logged to telramian-build-yyyymmddhhmm.log
+
+Follow further instructions on how to use it can be found on on 
 
 `<link>` https://telraam.net
 

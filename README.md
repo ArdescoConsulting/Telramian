@@ -1,47 +1,44 @@
 # Telramian
-Script to do a headless install of Telraam (https://telraam.net) on a Raspberry Pi
-OS: Raspbian GNU/Linux 10 Lite (Buster)
-Python: 3.7.3
-OpenCV: 4.1.2.
-Based on https://github.com/Telraam/Telraam-RPi
-Author: Manuel Stevens (manuel.stevens@ardesco.be)
+Script to do a headless install of Telraam (https://github.com/Telraam/Telraam-RPi) on a Raspberry Pi
 
-The script is a headless version of the installation instructions 
-[Misc/general-configuration-HOWTO.txt](https://github.com/Telraam/Telraam-RPi/blob/master/Misc/general-configuration-HOWTO.txt)
+ - OS: Raspbian GNU/Linux 10 Lite (Buster) version 2020-02-13
+ - Python: 3.7.3
+ - OpenCV: 4.3.0
 
-##Installation procedure
+The script is based the installation instructions [Misc/general-configuration-HOWTO.txt](https://github.com/Telraam/Telraam-RPi/blob/master/Misc/general-configuration-HOWTO.txt) including the latest security enhancements en latest raspbian and OpenCV version.
+# Build instructions
+## Install raspbian lite
+Download **Raspberry Pi Imager** from [https://www.raspberrypi.org/downloads/](https://www.raspberrypi.org/downloads/)
 
-Download the latest Raspian Buster Lite from
+Use Raspberry Pi Imager to install the **raspbian lite** on an SD card.
+## Download script
+Download **telramian.sh** to the **boot** partition on the sd card.
+On Windows this is the only partionion you can see and contains files such as cmdline.txt, config.txt,....
 
-`<link>` https://downloads.raspberrypi.org/raspbian_lite_latest
+If you want to login via ssh instead of the console, create an **empty file** with name  **ssh** in the same folder.
+## Create additional user (optional)
+For improved security, the password of the pi user is set to a random one at each reboot. Your telraam will work perfectly fine, but you won't be able to log in.
 
-Put the image on an SD card (minimum 32Gb for build) with Etcher
+If you want to be able to log in, just create an additional user
+`sudo adduser your_login_name`
+and give it sudo rightsp
+`sudo adduser your_login_name sudo`
+## Execute script
 
-`<link>` https://www.balena.io/etcher/
+Login with user **pi** and password **raspberry**
 
-Create an empty file ssh on the root partition of the SD card
+Set execute permissions for the script
 
-Boot the Pi with the SDCard
-
-SSH to the pi with username pi and password raspbian
-
-Copy the file telramian.sh to the home directory
-
-Set permissions
-
-`$ chmod a+x telramian.sh`
+`sudo chmod a+x /boot/telramian.sh`
 
 Execute the script
 
-`./telramian.sh`
+`/boot/telramian.sh`
 
 The script will take a couple of hours to build (tested in Raspberry Pi 4 4GB)
 
 The output is logged to telramian-build-yyyymmddhhmm.log
-
-Further instructions on how to use it can be found on on 
-
-`<link>` https://telraam.net
+# Using telraam
+Operating instructions for telraam can be found on https://telraam.net
 
 Enjoy :)
-

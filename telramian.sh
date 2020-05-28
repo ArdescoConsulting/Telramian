@@ -2,26 +2,26 @@
 # -------------------------------------------------------------
 # Telramian
 # Script to easily install Telraam (https://telraam.net) an rpi
-# OS: Raspbian GNU/Linux 10 Lite (Buster)
+# OS: Raspbian GNU/Linux 10 Lite (Buster) version 2020-02-13
 # Python: 3.7.3
-# OpenCV: 4.1.2.
+# OpenCV: 4.3.0
 # Based on https://github.com/Telraam/Telraam-RPi
 # Author= Manuel Stevens (manuel.stevens@ardesco.be)
 # -------------------------------------------------------------
 
-OPENCV_VERSION='4.1.2'
+OPENCV_VERSION='4.3.0'
 
 # path to Telraam application
 PATH_TELRAAM=$HOME/Telraam
 PATH_TELRAAM_SCRIPTS=$PATH_TELRAAM/Scripts
-PATH_TELRAAM_PICTURES=$HOME/Pictures
+PATH_TELRAAM_PICTURES=$PATH_TELRAAM/Pictures
 
 # path to Telraam-RPi github clone folder
 PATH_TELRAAM_RPI=$PATH_TELRAAM/Telraam-RPi
-PATH_TELRAAM_RPI_ACCESS_POINT=$PATH_TELRAAM_RPI/Access\ point
-PATH_TELRAAM_RPI_IMAGE_PROCESSING=$PATH_TELRAAM_RPI/Image\ processing
+PATH_TELRAAM_RPI_ACCESS_POINT=$PATH_TELRAAM_RPI/"Access point"
+PATH_TELRAAM_RPI_IMAGE_PROCESSING=$PATH_TELRAAM_RPI/"Image processing"
 PATH_TELRAAM_RPI_MISC=$PATH_TELRAAM_RPI/Misc
-PATH_TELRAAM_RPI_REMOTE_UPDATING=$PATH_TELRAAM_RPI/Remote\ updating
+PATH_TELRAAM_RPI_REMOTE_UPDATING=$PATH_TELRAAM_RPI/"Remote updating"
 
 # path to OpenCV
 PATH_OPENCV_BASE=$HOME/opencv
@@ -29,9 +29,7 @@ PATH_OPENCV=$PATH_OPENCV_BASE/opencv
 PATH_OPENCV_CONTRIB=$PATH_OPENCV_BASE/opencv_contrib
 PATH_OPENCV_BUILD=$PATH_OPENCV/build
 
-#PATH samba share
-PATH_SAMBA_SHARE=$HOME/Shared
-SAMBA_USERNAME=pi
+cd $HOME
 
 # This function formats the timestamp
 timestamp() { date +"%F_%T_%Z"; }
@@ -50,7 +48,30 @@ echo_process "------------------------------"
 echo_process "----Telramian installation----"
 echo_process "------------------------------"
 
+echo_process "Setting keyboard to be (Belgian)"
+L='be' && sudo sed -i 's/XKBLAYOUT=\"\w*"/XKBLAYOUT=\"'$L'\"/g' /etc/default/keyboard
+sudo dpkg-reconfigure keyboard-configuration -f noninteractive
+sudo invoke-rc.d keyboard-setup start
+sudo setsid sh -c 'exec setupcon -k --force <> /dev/tty1 >&0 2>&1'
+sudo udevadm trigger --subsystem-match=input --action=change
+
+echo_process "Disabling splash screen"
+CMDLINE=/boot/cmdline.txt
+if grep -q "splash" $CMDLINE ; then
+    sudo sed -i $CMDLINE -e "s/ quiet//"
+    sudo sed -i $CMDLINE -e "s/ splash//"
+    sudo sed -i $CMDLINE -e "s/ plymouth.ignore-serial-consoles//"
+fi
+
+echo_process "Enabling camera"
+sudo tee -a /boot/config.txt > /dev/null <<EOT
+
+start_x=1
+gpu_mem=128
+EOT
+
 echo_process "Removing unnecessary packages"
+sudo apt-get purge samba samba-common-bin -y
 sudo apt-get purge wolfram-engine -y
 sudo apt-get purge libreoffice* -y
 sudo apt-get purge minecraft-pi -y
@@ -68,6 +89,8 @@ rm -rf ~/Videos
 echo_process "Update and upgrade existing packages"
 sudo apt-get update -y
 sudo apt-get upgrade -y
+sudo apt-get clean -y
+sudo apt-get autoremove -y
 
 echo_process "Install build tools"
 #build-essential: This package contains an informational list of packages which are considered essential for building Debian packages. This package also depends on the packages on that list, to make it easy to have the build-essential packages installed.
@@ -79,7 +102,7 @@ echo_process "Install build tools"
 #git: Git is a distributed version-control system for tracking changes in source code during software development.
 #wget: GNU Wget is a computer program that retrieves content from web servers.
 #unzip: unzipping zip compressed files
-sudo apt-get install build-essential cmake gcc g++ gfortran pkg-config git wget unzip -y
+sudo apt-get install build-essential cmake gcc g++ gfortran pkg-config git wget unzip htop -y
 
 echo_process "Install GTK/GTK+"
 #GTK/GTK+ multi-platform toolkit for creating graphical user interfaces. Offering a complete set of widgets, GTK/GTK+ is suitable for projects ranging from small one-off tools to complete application suites.
@@ -152,20 +175,23 @@ echo_process "install opencv sub-module highgui (display images, basic GUIs) pre
 #libpango1.0-dev: Pango is a library for layout and rendering of text, with an emphasis on internationalization. Pango can be used anywhere that text layout is needed. however, most of the work on Pango-1.0 was done using the GTK+ widget toolkit as a test platform. Pango forms the core of text and font handling for GTK+-2.0.
 sudo apt-get install libfontconfig1-dev libcairo2-dev libgdk-pixbuf2.0-dev libpango1.0-dev -y
 
-echo_process "Install python 3, header files (compile opencv with Python bindings), testresources"
-sudo apt-get install python3 python3-dev python3-testresources python3-numpy -y
+echo_process "Installing python3-dev"
+sudo apt-get install python3-dev python3-pip -y
 
-echo_process "Install python 3 pip and clear cache"
-sudo apt-get install python3-pip -y
+echo_process "Installing python-numpy python-scipy"
+sudo apt-get install python-numpy python-scipy -y
+
+echo_process "Update pip and clear cache"
+python3 -m pip install --upgrade pip
 sudo rm -rf ~/.cache/pip
+
+echo_process "Install testresources picamera[array] wget numpy scipy pandas"
+sudo python3 -m pip install testresources picamera[array] wget numpy scipy pandas
 
 echo_process "Increase SWAP space to compile without hanging due to memory exhausting and on all 4 cores"
 sudo sed -i 's/CONF_SWAPSIZE=100/CONF_SWAPSIZE=1024/g' /etc/dphys-swapfile
 sudo /etc/init.d/dphys-swapfile stop
 sudo /etc/init.d/dphys-swapfile start
-
-echo_process "Install PIP3 picamera[array] wget numpy scipy pandas dlib"
-sudo pip3 install "picamera[array] wget numpy scipy pandas dlib"
 
 echo_process "Downloading opencv and opencv_contrib from github"
 mkdir -p $PATH_OPENCV_BASE
@@ -203,7 +229,7 @@ cmake -D CMAKE_BUILD_TYPE=RELEASE \
 	-D INSTALL_PYTHON_EXAMPLES=OFF \
 	-D BUILD_EXAMPLES=OFF ..
 
-make -j4
+nproc | xargs -I % make -j%
 sudo make install
 sudo ldconfig
 
@@ -212,16 +238,7 @@ sudo sed -i 's/CONF_SWAPSIZE=1024/CONF_SWAPSIZE=100/g' /etc/dphys-swapfile
 sudo /etc/init.d/dphys-swapfile stop
 sudo /etc/init.d/dphys-swapfile start
 
-echo_process "Install exfat"
-sudo apt-get install exfat-fuse exfat-utils -y
-
-echo_process "Install midori"
-sudo apt-get install midori -y
-
-echo_process "Install conky"
-sudo apt-get install conky-all -y 
-
-echo_process "Instal mysql database server (mariadb) with python support"
+echo_process "Instal mysql database server mariadb with python support"
 sudo apt-get install mariadb-server python3-mysqldb -y
 
 echo_process "Install apache2 web server with php and mysql support"
@@ -229,21 +246,6 @@ sudo apt-get install apache2 php libapache2-mod-php php-mysql -y
 
 echo_process "Install WIFI dnsmasq (dhcp) hostapd (access point)"
 sudo apt-get install dnsmasq hostapd -y
-
-echo_process "Install samba"
-sudo apt-get install debconf-utils
-echo "samba-common samba-common/workgroup string  WORKGROUP" | sudo debconf-set-selections
-echo "samba-common samba-common/dhcp boolean true" | sudo debconf-set-selections
-echo "samba-common samba-common/do_debconf boolean true" | sudo debconf-set-selections
-sudo apt-get install samba -y
-sudo apt-get install samba-common-bin smbclient cifs-utils -y
-
-echo_process "Enable camera"
-sudo raspi-config nonint do_camera 1
-echo_process "Disable ssh"
-sudo raspi-config nonint do_ssh 0
-echo_process "Disable splash screen"
-sudo raspi-config nonint do_boot_splash 0
 
 echo_process "Install Telraam-RPi master github ripository"
 mkdir -p $PATH_TELRAAM
@@ -262,6 +264,16 @@ cp -rf "$PATH_TELRAAM_RPI_MISC"/*.py $PATH_TELRAAM_SCRIPTS
 cp -rf "$PATH_TELRAAM_RPI_REMOTE_UPDATING"/*.py $PATH_TELRAAM_SCRIPTS
 chmod +x $PATH_TELRAAM_SCRIPTS/*
 
+#temp fix
+# the original telraam script is for opencv 3 while we are using opencv 4
+# the difference is that findContours is now returning 2 values instead of 3
+# no worries because the 3rd values was not used anayway
+# so just replace im2, contours, hierarchy = cv2.findContours with contours, hierarchy = cv2.findContours
+# until this is fixed in the original script (pull request submitted)
+# change it in telraam_monitoring.py
+sed -i 's/im2, contours, hierarchy = cv2.findContours/contours, hierarchy = cv2.findContours/g' $PATH_TELRAAM_SCRIPTS/telraam_monitoring.py
+#temp fix
+
 echo_process 'Configuration camera stream (based on https://picamera.readthedocs.io/en/latest/recipes2.html#web-streaming)'
 echo_process 'URL for locally testing camera stream http://127.0.0.1:8000/stream.mjpg'
 sudo chmod +x $PATH_TELRAAM_SCRIPTS/telraam_camera_stream.py
@@ -279,16 +291,6 @@ GRANT ALL PRIVILEGES ON *.* TO 'pi'@'localhost' IDENTIFIED BY 'pi';
 MY_QUERY
 
 echo_process 'Configuration monitoring script'
-
-#temp fix
-# the original telraam script is for opencv 3 while we are using opencv 4
-# the difference is that findContours is now returning 2 values instead of 3
-# no worries because the 3rd values was not used anayway
-# so just replace im2, contours, hierarchy = cv2.findContours with contours, hierarchy = cv2.findContours
-# until this is fixed in the original script
-sed -i 's/im2, contours, hierarchy = cv2.findContours/contours, hierarchy = cv2.findContours/g' $PATH_TELRAAM_SCRIPTS/telraam_monitoring.py
-#temp fix
-
 sudo chmod +x $PATH_TELRAAM_SCRIPTS/telraam_monitoring.py
 sudo cp "$PATH_TELRAAM_RPI_IMAGE_PROCESSING"/telraam_monitoring.service /lib/systemd/system/
 sudo chmod 644 /lib/systemd/system/telraam_monitoring.service
@@ -315,11 +317,12 @@ net.ipv6.conf.all.disable_ipv6=1
 EOT
 sudo sysctl -p
 
-# Disable eth0
-sudo tee -a /etc/rc.local > /dev/null <<EOT
+#set the country code to BE for wlan0 in /etc/wpa_supplicant/wpa_supplicant.conf 
+sudo wpa_cli -i wlan0 set country BE
+sudo wpa_cli -i wlan0 save_config
 
-sudo ifconfig eth0 down
-EOT
+#Unblock WIFI
+rfkill unblock wifi
 
 #In order to work as an access point, the Raspberry Pi needs access point (HostAPD) and DHCP server (DNSMasq) software to provide.
 #https://www.raspberrypi.org/documentation/configuration/wireless/access-point.md
@@ -354,6 +357,7 @@ dhcp-range=192.168.254.2,192.168.254.254,255.255.255.0,24h
 EOT
 
 #Reload dnsmasq to use the updated configuration.
+sudo systemctl start dnsmasq
 sudo systemctl reload dnsmasq
 
 #You need to edit the hostapd configuration file, located at /etc/hostapd/hostapd.conf, to add the various parameters for your wireless network.
@@ -389,15 +393,14 @@ EOT
 #In /etc/default/hostapd, replace the line with #DAEMON_CONF with DAEMON_CONF="/etc/hostapd/hostapd.conf"
 sudo sed -i '/#DAEMON_CONF/s/^#//g' /etc/default/hostapd ; sudo sed -i 's/"/&\/etc\/hostapd\/hostapd.conf/1' /etc/default/hostapd
 
-#Enable and start hostapd and dnsmasq 
+#Enable and start hostapd and reload dnsmasq 
 sudo systemctl unmask hostapd
 sudo systemctl enable hostapd
 sudo systemctl start hostapd
-sudo systemctl start dnsmasq
 
 #A quick check of their status to ensure they are active and running can be done with commands below:
-#sudo systemctl status hostapd
-#sudo systemctl status dnsmasq
+sudo systemctl status hostapd
+sudo systemctl status dnsmasq
 
 #Add routing and masquerade
 #In /etc/sysctl.conf, uncomment the line #net.ipv4.ip_forward=1
@@ -409,8 +412,13 @@ sudo iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
 #Save the iptables rule.
 sudo sh -c "iptables-save > /etc/iptables.ipv4.nat"
 
-#In /etc/rc.local add iptables-restore < /etc/iptables.ipv4.nat just above "exit 0" to install these rules on boot.
-sudo sed -i '/^exit 0/i \\n#sudo ifconfig eth0 down\nsudo iptables-restore < /etc/iptables.ipv4.nat\n' /etc/rc.local
+#In /etc/rc.local add 
+#sudo ifconfig eth0 down
+#iptables-restore < /etc/iptables.ipv4.nat 
+##Set random pwd at startup
+#echo "pi:$(sudo openssl rand -base64 12 2>&1)" | sudo chpasswd\
+#just above "exit 0" to install these rules on boot.
+sudo sed -i '/^exit 0/i \\nsudo ifconfig eth0 down\nsudo iptables-restore < /etc/iptables.ipv4.nat\n#Set random pwd at startup\n/bin/echo "pi:$(sudo /usr/bin/openssl rand -base64 12 2>&1)" | sudo /usr/sbin/chpasswd\n' /etc/rc.local
 
 echo_process 'Setup Access Point control'
 sudo chmod +x $PATH_TELRAAM_SCRIPTS/telraam_ap_control_loop.py
@@ -442,10 +450,7 @@ alias wadir='ls -ah'
 alias del='rm'
 alias cd..='cd ..'
 alias d='sudo du -h | sort -r -h | less'
-alias el='elinks http://www.google.be/'
 alias h='htop'
-alias x='startx'
-alias b='epiphany-browser > /dev/null 2> /dev/null'
 alias c='sudo raspi-config'
 alias u='sudo apt-get update; sudo apt-get upgrade; sudo apt-get autoremove; sudo apt-get clean'
 alias ipc='hostname -I'
@@ -494,10 +499,7 @@ alias wadir='ls -ah'
 alias del='rm'
 alias cd..='cd ..'
 alias d='sudo du -h | sort -r -h | less'
-alias el='elinks http://www.google.be/'
 alias h='htop'
-alias x='startx'
-alias b='epiphany-browser > /dev/null 2> /dev/null'
 alias c='sudo raspi-config'
 alias u='sudo apt-get update; sudo apt-get upgrade; sudo apt-get autoremove; sudo apt-get clean'
 alias ipc='hostname -I'
@@ -534,31 +536,13 @@ alias m='sudo mysql'
 EOT
 source ~/.bashrc
 
-echo_process 'Configuring Samba share accessible via Windows explorer: \\telraam.local\ with user pi password pi'
-mkdir -p $PATH_SAMBA_SHARE
-sudo chown -R root:users $PATH_SAMBA_SHARE
-sudo chmod -R ug=rwx,o=rx $PATH_SAMBA_SHARE
+echo_process 'Disabling SSH"'
+sudo systemctl disable ssh.service
+sudo systemctl stop ssh.service
 
-(echo 'pi'; sleep 1; echo 'pi' ) | sudo smbpasswd -s -a $SAMBA_USERNAME
-sudo tee -a /etc/samba/smb.conf > /dev/null <<EOT
+# cleanupo opencv folder
+sudo rm -rf $PATH_TELRAAM_RPI
+sudo rm -rf $PATH_OPENCV_BASE
 
-[Shared]
-   comment = Pi shared folder
-   path = $PATH_SAMBA_SHARE
-   writeable = Yes
-   browseable = yes
-   readonly = no
-#   guest ok = yes
-   create mask = 0644
-   directory mask = 0755
-   force user = pi
-   
-
-netbios name = telraam
-name resolve order = bcast lmhosts host wins
-EOT
-sudo /etc/init.d/samba restart
-
-echo_process 'Done!'
-echo_process 'Rebooting....'
-sudo reboot
+echo_process "Log file: telramian-build-$timestamp.log"
+echo_process 'Done! You can now reboot with sudo reboot -h now'

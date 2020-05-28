@@ -5,7 +5,7 @@ Script to do a headless install of Telraam (https://github.com/Telraam/Telraam-R
  - Python: 3.7.3
  - OpenCV: 4.3.0
 
-The script is based the installation instructions [Misc/general-configuration-HOWTO.txt](https://github.com/Telraam/Telraam-RPi/blob/master/Misc/general-configuration-HOWTO.txt) including the latest security enhancements en latest raspbian and OpenCV version.
+The script is based the installation instructions [Misc/general-configuration-HOWTO.txt](https://github.com/Telraam/Telraam-RPi/blob/master/Misc/general-configuration-HOWTO.txt) including the latest security enhancements and latest raspbian and OpenCV version.
 # Build instructions
 ## Install raspbian lite
 Download **Raspberry Pi Imager** from [https://www.raspberrypi.org/downloads/](https://www.raspberrypi.org/downloads/)
@@ -13,7 +13,7 @@ Download **Raspberry Pi Imager** from [https://www.raspberrypi.org/downloads/](h
 Use Raspberry Pi Imager to install the **raspbian lite** on an SD card.
 ## Download script
 Download **telramian.sh** to the **boot** partition on the sd card.
-On Windows this is the only partionion you can see and contains files such as cmdline.txt, config.txt,....
+On Windows this is the only partition you can see and contains files such as cmdline.txt, config.txt,....
 
 If you want to login via ssh instead of the console, create an **empty file** with name  **ssh** in the same folder.
 ## Create additional user (optional)

@@ -2,7 +2,7 @@
 # -------------------------------------------------------------
 # Telramian
 # Script to easily install Telraam (https://telraam.net) an rpi
-# OS: Raspbian GNU/Linux 10 Lite (Buster) version 2020-02-13
+# OS: Raspberry Pi OS Lite (Buster) version 2020-05-27
 # Python: 3.7.3
 # OpenCV: 4.3.0
 # Based on https://github.com/Telraam/Telraam-RPi

@@ -10,7 +10,7 @@ The script is based the installation instructions [Misc/general-configuration-HO
 ## Install Raspberry Pi OS Lite
 Download **Raspberry Pi Imager** from [https://www.raspberrypi.org/downloads/](https://www.raspberrypi.org/downloads/)
 
-Use Raspberry Pi Imager to install the **Raspberry Pi OS Lite* on an SD card.
+Use Raspberry Pi Imager to install the **Raspberry Pi OS Lite** on an SD card.
 ## Download script
 Download **telramian.sh** to the **boot** partition on the sd card.
 On Windows this is the only partition you can see and contains files such as cmdline.txt, config.txt,....

@@ -159,6 +159,9 @@ echo_process "install opencv sub-module highgui (display images, basic GUIs) pre
 #libpango1.0-dev: Pango is a library for layout and rendering of text, with an emphasis on internationalization. Pango can be used anywhere that text layout is needed. however, most of the work on Pango-1.0 was done using the GTK+ widget toolkit as a test platform. Pango forms the core of text and font handling for GTK+-2.0.
 sudo apt-get install libfontconfig1-dev libcairo2-dev libgdk-pixbuf2.0-dev libpango1.0-dev -y
 
+echo_process "Install g++ for opencv Tengine build support"
+sudo apt install g++-arm-linux-gnueabihf
+
 echo_process "Installing python3-dev"
 sudo apt-get install python3-dev python3-pip -y
 
@@ -208,6 +211,7 @@ cmake -D CMAKE_BUILD_TYPE=RELEASE \
 	-D WITH_V4L=ON \
 	-D WITH_QT=ON \
 	-D WITH_OPENGL=ON \
+	-D WITH_TENGINE=ON \
 	-D BUILD_TESTS=OFF \
 	-D INSTALL_C_EXAMPLES=OFF \
 	-D INSTALL_PYTHON_EXAMPLES=OFF \

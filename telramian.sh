@@ -71,10 +71,10 @@ gpu_mem=128
 EOT
 
 echo_process "Update and upgrade existing packages"
-sudo apt-get update -y
-sudo apt-get upgrade -y
-sudo apt-get clean -y
-sudo apt-get autoremove -y
+sudo apt update -y
+sudo apt full-upgrade -y
+sudo apt clean -y
+sudo apt autoremove -y
 
 echo_process "Install build tools"
 #build-essential: This package contains an informational list of packages which are considered essential for building Debian packages. This package also depends on the packages on that list, to make it easy to have the build-essential packages installed.
@@ -86,14 +86,14 @@ echo_process "Install build tools"
 #git: Git is a distributed version-control system for tracking changes in source code during software development.
 #wget: GNU Wget is a computer program that retrieves content from web servers.
 #unzip: unzipping zip compressed files
-sudo apt-get install build-essential cmake gcc g++ gfortran pkg-config git wget unzip htop -y
+sudo apt install build-essential cmake gcc g++ gfortran pkg-config git wget unzip htop -y
 
 echo_process "Install GTK/GTK+"
 #GTK/GTK+ multi-platform toolkit for creating graphical user interfaces. Offering a complete set of widgets, GTK/GTK+ is suitable for projects ranging from small one-off tools to complete application suites.
 #This package contains the header and development files which are needed for building GTK/GTK+ applications.
 #libgtk2.0-dev GTK+ 
 #libgtk-3-dev GTK
-sudo apt-get install libgtk2.0-dev libgtk-3-dev -y
+sudo apt install libgtk2.0-dev libgtk-3-dev -y
 
 echo_process "install Qt (cross-platform C++ application framework)"
 #Qt is a cross-platform C++ application framework. Qt's primary feature is its rich set of widgets that provide standard GUI functionality.
@@ -102,7 +102,7 @@ echo_process "install Qt (cross-platform C++ application framework)"
 #libqtwebkit4: QtWebKit provides a Web browser engine that makes it easy to embed content from the World Wide Web into your Qt application.
 #libqt4-test: Qt 4 test module.
 #python3-pyqt5: PyQt5 exposes the Qt5 API to Python 3.
-sudo apt-get install qt5-default libqtgui4 libqtwebkit4 libqt4-test python3-pyqt5 -y
+sudo apt install qt5-default libqtgui4 libqtwebkit4 libqt4-test python3-pyqt5 -y
 
 echo_process "Install optimizations libraries"
 #libatlas-base-dev: Automatically Tuned Linear Algebra Software ATLAS is an approach for the automatic generation and optimization of numerical software. Currently ATLAS supplies optimized versions for the complete set of linear algebra kernels known as the Basic Linear Algebra Subroutines (BLAS), and a subset of the linear algebra routines in the LAPACK library.
@@ -117,7 +117,7 @@ echo_process "Install optimizations libraries"
 #libgoogle-glog-dev: library provides logging APIs based on C++-style streams and various helper macros.
 #libgflags-dev: library that implements commandline flags processing for C++.
 #doxygen: Documentation system for C++, C, Java, Objective-C and IDL.
-sudo apt-get install libatlas-base-dev libtbb-dev libtbb2 libhdf5-dev libhdf5-103 libeigen3-dev liblapacke-dev libprotobuf-dev protobuf-compiler libgoogle-glog-dev libgflags-dev doxygen -y
+sudo apt install libatlas-base-dev libtbb-dev libtbb2 libhdf5-dev libhdf5-103 libeigen3-dev liblapacke-dev libprotobuf-dev protobuf-compiler libgoogle-glog-dev libgflags-dev doxygen -y
 
 echo_process "install image I/O packages"
 #libjpeg-dev: JPEG library.
@@ -127,7 +127,7 @@ echo_process "install image I/O packages"
 #libjasper-dev: JasPer JPEG-2000 library
 #libwebp-dev: webp library (based on the VP8 codec)
 #libopenexr-dev: OpenEXR is a high dynamic-range (HDR) image library
-sudo apt-get install libjpeg-dev libjpeg62-turbo-dev libpng-dev libtiff-dev libjasper-dev libwebp-dev libopenexr-dev -y 
+sudo apt install libjpeg-dev libjpeg62-turbo-dev libpng-dev libtiff-dev libjasper-dev libwebp-dev libopenexr-dev -y 
 
 echo_process "install video I/O packages"
 #libavcodec-dev: Libav is a complete, cross-platform solution to decode, encode, record, convert and stream audio and video. This is the codec library from Libav. It supports most existing encoding formats (MPEG, DivX, MPEG4, AC3, DV...). 
@@ -140,33 +140,33 @@ echo_process "install video I/O packages"
 #v4l-utils: Collection of command line video4linux utilities
 #libtheora-dev: Theora is a fully open, non-proprietary, patent-and-royalty-free, general-purpose compressed video format.
 #libxvidcore-dev: Xvid (formerly XviD) is an open source MPEG-4 video codec, implementing MPEG-4 Simple Profile, Advanced Simple Profile, and Advanced Video Coding standards.
-sudo apt-get install libavcodec-dev libavformat-dev libavresample-dev libswscale-dev x264 libx264-dev libv4l-dev v4l-utils libtheora-dev libxvidcore-dev -y
+sudo apt install libavcodec-dev libavformat-dev libavresample-dev libswscale-dev x264 libx264-dev libv4l-dev v4l-utils libtheora-dev libxvidcore-dev -y
 
 echo_process "install audio I/O packages"
 #libmp3lame-dev: LAME (LAME Ain't an MP3 Encoder) includes an MP3 encoding library, a simple frontend application, and other tools for sound analysis, as well as convenience tools.
 #libvorbis-dev: development files for Vorbis General Audio Compression Codec. Ogg Vorbis is a fully open, non-proprietary, patent-and-royalty-free, general-purpose compressed audio format for audio and music at fixed and variable bitrates from 16 to 128 kbps/channel.
 #libopencore-amrnb-dev: library contains an implementation of the 3GPP TS 26.073 specification for the Adaptive Multi Rate (AMR) speech codec.
-sudo apt-get install libmp3lame-dev libvorbis-dev libopencore-amrnb-dev -y
+sudo apt install libmp3lame-dev libvorbis-dev libopencore-amrnb-dev -y
 
 echo_process "install digital camera I/O packages"
 #libgphoto2-dev: library can be used by applications to access various digital camera models, via standard protocols such as USB Mass Storage and PTP, or vendor-specific protocols.
-sudo apt-get install libgphoto2-dev -y
+sudo apt install libgphoto2-dev -y
 
 echo_process "install opencv sub-module highgui (display images, basic GUIs) prerequisites"
 #libfontconfig1-dev: Fontconfig is a font configuration and customization library, which does not depend on the X Window System. It is designed to locate fonts within the system and select them according to requirements specified by applications.
 #libcairo2-dev: Cairo is a multi-platform 2D library providing anti-aliased vector-based rendering for multiple target backends. This package contains the development libraries, header files needed by programs that want to compile with Cairo.
 #libgdk-pixbuf2.0-dev: The GDK Pixbuf library provides Image loading and saving facilities, Fast scaling and compositing of pixbufs and Simple animation loading (ie. animated GIFs). This package contains the header files which are needed for using GDK Pixbuf.
 #libpango1.0-dev: Pango is a library for layout and rendering of text, with an emphasis on internationalization. Pango can be used anywhere that text layout is needed. however, most of the work on Pango-1.0 was done using the GTK+ widget toolkit as a test platform. Pango forms the core of text and font handling for GTK+-2.0.
-sudo apt-get install libfontconfig1-dev libcairo2-dev libgdk-pixbuf2.0-dev libpango1.0-dev -y
+sudo apt install libfontconfig1-dev libcairo2-dev libgdk-pixbuf2.0-dev libpango1.0-dev -y
 
 echo_process "Install g++ for opencv Tengine build support"
 sudo apt install g++-arm-linux-gnueabihf
 
 echo_process "Installing python3-dev"
-sudo apt-get install python3-dev python3-pip -y
+sudo apt install python3-dev python3-pip -y
 
 echo_process "Installing python-numpy python-scipy"
-sudo apt-get install python-numpy python-scipy -y
+sudo apt install python-numpy python-scipy -y
 
 echo_process "Update pip and clear cache"
 python3 -m pip install --upgrade pip
@@ -227,13 +227,13 @@ sudo /etc/init.d/dphys-swapfile stop
 sudo /etc/init.d/dphys-swapfile start
 
 echo_process "Instal mysql database server mariadb with python support"
-sudo apt-get install mariadb-server python3-mysqldb -y
+sudo apt install mariadb-server python3-mysqldb -y
 
 echo_process "Install apache2 web server with php and mysql support"
-sudo apt-get install apache2 php libapache2-mod-php php-mysql -y
+sudo apt install apache2 php libapache2-mod-php php-mysql -y
 
 echo_process "Install WIFI dnsmasq (dhcp) hostapd (access point)"
-sudo apt-get install dnsmasq hostapd -y
+sudo apt install dnsmasq hostapd -y
 
 echo_process "Install Telraam-RPi master github ripository"
 mkdir -p $PATH_TELRAAM
@@ -440,7 +440,7 @@ alias cd..='cd ..'
 alias d='sudo du -h | sort -r -h | less'
 alias h='htop'
 alias c='sudo raspi-config'
-alias u='sudo apt-get update; sudo apt-get upgrade; sudo apt-get autoremove; sudo apt-get clean'
+alias u='sudo apt update; sudo apt full-upgrade; sudo apt autoremove; sudo apt clean'
 alias ipc='hostname -I'
 alias mac='python3 $PATH_TELRAAM_SCRIPTS/telraam_show_mac_address.py'
 alias ap='nano $PATH_TELRAAM_SCRIPTS/telraam_ap_control_loop.py'
@@ -489,7 +489,7 @@ alias cd..='cd ..'
 alias d='sudo du -h | sort -r -h | less'
 alias h='htop'
 alias c='sudo raspi-config'
-alias u='sudo apt-get update; sudo apt-get upgrade; sudo apt-get autoremove; sudo apt-get clean'
+alias u='sudo apt update; sudo apt full-upgrade; sudo apt autoremove; sudo apt clean'
 alias ipc='hostname -I'
 alias mac='python3 $PATH_TELRAAM_SCRIPTS/telraam_show_mac_address.py'
 alias ap='nano $PATH_TELRAAM_SCRIPTS/telraam_ap_control_loop.py'

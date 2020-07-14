@@ -70,22 +70,6 @@ start_x=1
 gpu_mem=128
 EOT
 
-echo_process "Removing unnecessary packages"
-sudo apt-get purge samba samba-common-bin -y
-sudo apt-get purge wolfram-engine -y
-sudo apt-get purge libreoffice* -y
-sudo apt-get purge minecraft-pi -y
-sudo apt-get remove chromium-browser -y
-sudo apt-get remove epiphany-browser -y
-sudo apt-get clean -y
-sudo apt-get autoremove -y
-
-echo_process "Removing unnecessary folders"
-rm -rf ~/MagPi
-rm -rf ~/Music
-rm -rf ~/Templates
-rm -rf ~/Videos
-
 echo_process "Update and upgrade existing packages"
 sudo apt-get update -y
 sudo apt-get upgrade -y
